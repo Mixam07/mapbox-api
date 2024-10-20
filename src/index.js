@@ -21,28 +21,30 @@ app.get('', async (req, res) => {
 
 app.get('/create-subscription', async (req, res) => {
     try {
+        const { email, paymentMethodId, plan } = req.query;
+        
         const customer = await stripe.customers.create({
-            email: req.body.email,
-            payment_method: req.body.paymentMethodId,
+            email: email,
+            payment_method: paymentMethodId,
             invoice_settings: {
-                default_payment_method: req.body.paymentMethodId,
+                default_payment_method: paymentMethodId,
             },
         });
 
         const subscription = await stripe.subscriptions.create({
             customer: customer.id,
-            items: [{ price: plans[req.body.plan] }], // Замените на ваш ID цены
+            items: [{ price: plans[plan] }],
             expand: ['latest_invoice.payment_intent'],
         });
 
-        console.log(subscription)
+        console.log(subscription);
 
         res.json({
             subscriptionId: subscription.id,
             clientSecret: subscription.latest_invoice.payment_intent.client_secret,
         });
     } catch (error) {
-        console.log(error)
+        console.log(error);
         res.status(500).send({ error: "Failed to create checkout session" });
     }
 });
