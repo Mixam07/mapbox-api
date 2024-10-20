@@ -19,7 +19,7 @@ app.get('', async (req, res) => {
     res.send("...")
 });
 
-app.post('/create-subscription', async (req, res) => {
+app.get('/create-subscription', async (req, res) => {
     try {
         const customer = await stripe.customers.create({
             email: req.body.email,
