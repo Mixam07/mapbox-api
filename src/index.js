@@ -15,6 +15,10 @@ const plans = {
     premium: process.env.PREMIUM
 }
 
+app.get('', async (req, res) => {
+    res.send("...")
+});
+
 app.post('/create-subscription', async (req, res) => {
     try {
         const customer = await stripe.customers.create({
