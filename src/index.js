@@ -15,7 +15,7 @@ const plans = {
     premium: process.env.PREMIUM
 }
 
-app.post('/create-subscription', async (req, res) => {
+app.get('/create-subscription', async (req, res) => {
     try {
         const { email, paymentMethodId, plan } = req.query; 
 
