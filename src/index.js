@@ -15,36 +15,30 @@ const plans = {
     premium: process.env.PREMIUM
 }
 
-app.get('', async (req, res) => {
-    res.send("...")
-});
-
-app.get('/create-subscription', async (req, res) => {
+app.post('/create-subscription', async (req, res) => {
     try {
-        const { email, paymentMethodId, plan } = req.query;
-        
         const customer = await stripe.customers.create({
-            email: email,
-            payment_method: paymentMethodId,
+            email: req.body.email,
+            payment_method: req.body.paymentMethodId,
             invoice_settings: {
-                default_payment_method: paymentMethodId,
+                default_payment_method: req.body.paymentMethodId,
             },
         });
 
         const subscription = await stripe.subscriptions.create({
             customer: customer.id,
-            items: [{ price: plans[plan] }],
+            items: [{ price: plans[req.body.plan] }],
             expand: ['latest_invoice.payment_intent'],
         });
 
-        console.log(subscription);
+        console.log(subscription)
 
         res.json({
             subscriptionId: subscription.id,
             clientSecret: subscription.latest_invoice.payment_intent.client_secret,
         });
     } catch (error) {
-        console.log(error);
+        console.log(error)
         res.status(500).send({ error: "Failed to create checkout session" });
     }
 });
