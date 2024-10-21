@@ -10,7 +10,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', '*'); // Разрешает доступ с любых доменов
+    res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
     next();
@@ -22,23 +22,23 @@ const plans = {
     premium: process.env.PREMIUM
 }
 
-app.get('/create-subscription', async (req, res) => {
+app.post('/create-subscription', async (req, res) => {
     try {
-        const { email, paymentMethodId, plan } = req.query; 
-
         const customer = await stripe.customers.create({
-            email: email,
-            payment_method: paymentMethodId,
+            email: req.body.email,
+            payment_method: req.body.paymentMethodId,
             invoice_settings: {
-                default_payment_method: paymentMethodId,
+                default_payment_method: req.body.paymentMethodId,
             },
         });
 
         const subscription = await stripe.subscriptions.create({
             customer: customer.id,
-            items: [{ price: plans[plan] }],
+            items: [{ price: plans[req.body.plan] }],
             expand: ['latest_invoice.payment_intent'],
         });
+
+        console.log(subscription)
 
         res.json({
             subscriptionId: subscription.id,
