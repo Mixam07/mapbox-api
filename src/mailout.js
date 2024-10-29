@@ -5,7 +5,7 @@ const serviceAccount = require("../path/serviceAccountKey.json");
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  databaseURL: "https://mapbox-8444d-default-rtdb.firebaseio.com"
+  databaseURL: process.env.DATABASE_URL
 });
 
 const db = admin.database();
@@ -33,7 +33,7 @@ const sendEmails = (key) => {
 
             refUser.once('value', (snapshotUseUser) => {
                 const user = snapshotUseUser.val();
-
+                
                 const mailOptions = {
                     from: process.env.EMAIL,
                     to: user.email,
